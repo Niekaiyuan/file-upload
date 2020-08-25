@@ -1,0 +1,67 @@
+    //上传视频
+	function uploadVideo(){
+		//获取视频名称
+		var theme = $("#theme").val();
+		 if(typeof theme == "undefined" || theme == null|| theme == "" || theme.trim() == ""){
+			 layer.msg("视频名称不能为空",{icon:7});
+			 return false;
+		 }
+		//获取视频详情
+		var info = $("#info").val();
+		 if(typeof info == "undefined" || info == null|| info == "" || info.trim() == ""){
+			 layer.msg("视频详情不能为空",{icon:7});
+			 return false;
+		 }
+		 //获取视频文件
+		 var videofile = $("input[id='lefile']").val();//用户文件内容(文件)
+		 if(typeof videofile == "undefined" || videofile == null|| videofile == "" || videofile.trim() == ""){
+			 layer.msg("请选择目标文件",{icon:7});
+			 return false;
+		 }
+		/* var fileName = videofile.substring(videofile.lastIndexOf(".") + 1).toLowerCase();
+		if (fileName != "pdf") {
+			layer.msg("请选择pdf文件!");
+			return false;
+		} */
+		//判断文件大小
+		/* var filesize = $("input[id='lefile']")[0].files[0].size;
+		if (filesize > 104857600) {
+			layer.msg("上传文件不能大于100M!");
+			return false;
+		} */
+		var type = "videofile";
+		var formData = new FormData();//这里需要实例化一个FormData来进行文件上传
+		formData.append(type, $("#lefile")[0].files[0]);
+		//uploadPicture();
+			$.ajax({
+				type : "post",
+				url : "video/new?theme=" + theme
+						+ "&info=" + info + "",
+				data : formData,
+				processData : false,
+				contentType : false,
+				xhr:function(){                        
+                   var myXhr = $.ajaxSettings.xhr();
+                   if(myXhr.upload){ //检查上传的文件是否存在
+                        myXhr.upload.addEventListener('progress',function(e){                            
+                            var loaded = e.loaded; //已经上传大小情况 
+                            var total = e.total; //附件总大小 
+                            var percent = Math.floor(100*loaded/total)+"%"; //已经上传的百分比  
+                            //console.log("已经上传了："+percent);    
+                            //显示进度条             
+                            $("#content").css("width",percent).css("height",20).css("margin-top",8).css("backgroundColor","#33CCFF").css("color","white").html("<b>"+percent+"</b>");                                                                                                                                
+                        }, false); // for handling the progress of the upload
+                    }
+                    return myXhr;
+                },      
+				success : function(data) {
+					$("#lefile").val("");
+					$("#theme").val("");
+					$("#info").val("");
+					layer.msg("上传成功！！！",{icon:1});
+				},
+				error : function() {
+					layer.msg("网络异常，上传失败！！！，请稍后再试",{icon:5});
+				}
+			});
+	}
